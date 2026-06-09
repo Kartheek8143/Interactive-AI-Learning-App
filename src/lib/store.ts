@@ -64,7 +64,7 @@ const DEFAULT_ACHIEVEMENTS: Achievement[] = [
 export const useStore = create<AppState>()(
   persist(
      (set, get) => ({
-      apiKey: 'ollama',
+      apiKey: '',
       setApiKey: (key) => set({ apiKey: key }),
       
       learningLevel: 'beginner',
@@ -117,11 +117,13 @@ export const useStore = create<AppState>()(
     }),
     { 
       name: 'learnai-store',
-      version: 4,
+      version: 5,
       migrate: (persisted: any, version: number) => {
-        if (version < 4) {
-          // Migrate to local Ollama (free, no quota limits)
-          persisted.apiKey = 'ollama';
+        if (version < 5) {
+          // Clear ollama key — switch to Groq (user must enter gsk_ key)
+          if (!persisted.apiKey || persisted.apiKey === 'ollama') {
+            persisted.apiKey = '';
+          }
         }
         return persisted;
       },
